@@ -1,34 +1,32 @@
-import logging
-from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler
+import logging
 import os
-from uvicorn import run  # این رو اینجا قرار بده
+from uvicorn import run
 
 # دریافت توکن از متغیر محیطی
 TOKEN = os.getenv("BOT_TOKEN")
 
 # تنظیمات لاگ
-logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                    level=logging.INFO)
+logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # تعریف دستور start
-async def start(update: Update, context):
-    await update.message.reply_text("سلام! برای دریافت کد تخفیف شبانه، دکمه زیر را بزنید.")
+async def start(update, context):
+    await update.message.reply_text("سلام!")
 
 # تعریف عملکرد دکمه
-async def button(update: Update, context):
+async def button(update, context):
     query = update.callback_query
     await query.answer()
     user_id = query.from_user.id
-    await query.edit_message_text(text=f"تبریک! کد تخفیف شما: NIGHT1")
+    await query.edit_message_text(text=f"User ID: {user_id}")
 
-# تنظیمات سرور و اجرای برنامه
-if __name__ == '__main__':
+# تعریف اپلیکیشن و اجرا
+def main():
     app = ApplicationBuilder().token(TOKEN).build()
-
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button))
+    app.run_polling()
 
-    # اجرای برنامه روی پورت 10000
-    run("main:app", host="0.0.0.0", port=10000)
+if __name__ == "__main__":
+    main()
