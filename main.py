@@ -31,8 +31,7 @@ async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif len(claimed_users) < max_users:
         code = discount_codes[len(claimed_users)]
         claimed_users.append(user_id)
-        await query.edit_message_text(text=f"تبریک! شما جزو ۵ نفر اول هستید.
-کد تخفیف شما: {code}")
+        await query.edit_message_text(text=f"تبریک! شما جزء ۵ نفر اول هستید. کد تخفیف شما: {code}")
     else:
         await query.edit_message_text(text="متأسفیم، ظرفیت ۵ نفر اول پر شده. منتظر پیشنهادهای ویژه بعدی باشید!")
 
