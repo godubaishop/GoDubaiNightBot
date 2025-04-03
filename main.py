@@ -5,7 +5,7 @@ import os
 from uvicorn import run  # این رو اینجا قرار بده
 
 # دریافت توکن از متغیر محیطی
-TOKEN = os.getenv("TOKEN")
+TOKEN = os.getenv("BOT_TOKEN")
 
 # تنظیمات لاگ
 logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
