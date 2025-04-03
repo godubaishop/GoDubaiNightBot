@@ -1,46 +1,34 @@
-
 import logging
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler
+import os
+from uvicorn import run  # این رو اینجا قرار بده
 
-# Token (from user)
-TOKEN = "8053312481:AAEiqkjUZGcByKkrB1npocosrcytvuYIBvo"
+# دریافت توکن از متغیر محیطی
+TOKEN = os.getenv("TOKEN")
 
-# Set up logging
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+# تنظیمات لاگ
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                    level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Storage for users and discount codes
-claimed_users = []
-max_users = 5
-discount_codes = ["NIGHT1", "NIGHT2", "NIGHT3", "NIGHT4", "NIGHT5"]
+# تعریف دستور start
+async def start(update: Update, context):
+    await update.message.reply_text("سلام! برای دریافت کد تخفیف شبانه، دکمه زیر را بزنید.")
 
-# Start command
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = [[InlineKeyboardButton("دریافت کد تخفیف", callback_data='get_code')]]
-    reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text("سلام! برای دریافت کد تخفیف شبانه دکمه زیر رو بزن:", reply_markup=reply_markup)
-
-# Button handler
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# تعریف عملکرد دکمه
+async def button(update: Update, context):
     query = update.callback_query
     await query.answer()
     user_id = query.from_user.id
+    await query.edit_message_text(text=f"تبریک! کد تخفیف شما: NIGHT1")
 
-    if user_id in claimed_users:
-        await query.edit_message_text(text="شما قبلاً کد تخفیف دریافت کرده‌اید.")
-    elif len(claimed_users) < max_users:
-        code = discount_codes[len(claimed_users)]
-        claimed_users.append(user_id)
-        await query.edit_message_text(text=f"تبریک! شما جزء ۵ نفر اول هستید. کد تخفیف شما: {code}")
-    else:
-        await query.edit_message_text(text="متأسفیم، ظرفیت ۵ نفر اول پر شده. منتظر پیشنهادهای ویژه بعدی باشید!")
-
-# Main app
-def main():
+# تنظیمات سرور و اجرای برنامه
+if __name__ == '__main__':
     app = ApplicationBuilder().token(TOKEN).build()
+
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CallbackQueryHandler(button))
-    app.run_polling()
 
-if __name__ == '__main__':
-    main()
+    # اجرای برنامه روی پورت 10000
+    run("main:app", host="0.0.0.0", port=10000)
